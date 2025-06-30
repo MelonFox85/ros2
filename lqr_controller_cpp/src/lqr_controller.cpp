@@ -16,10 +16,10 @@ class LQRVoltageController : public rclcpp::Node
 public:
   LQRVoltageController() : Node("lqr_controller_cpp")
   {
-    // Обновленные коэффициенты LQR
+    // коэффициенты LQR
     const std::vector<double> default_k = {
-      -0.60421,   -5.04,  0.70005,   -2.3034,   -0.77094,   0.025169,
-      -0.60421,   -5.04,  -0.70005,   -2.3034,   -0.77094,  -0.025169
+      -11.352, -82.573, 144.35, -29.556, -4.7688, 0.89216,
+      -11.352, -82.573, -144.35, -29.556, -4.7688, -0.89216
     };
     K_            = declare_parameter<std::vector<double>>("K", default_k);
     max_voltage_  = declare_parameter<double>("max_voltage", 12.0);
@@ -60,10 +60,10 @@ private:
     v_left  = std::clamp(v_left,  -max_voltage_, max_voltage_);
     v_right = std::clamp(v_right, -max_voltage_, max_voltage_);
 
-    RCLCPP_INFO(this->get_logger(),
+/*    RCLCPP_INFO(this->get_logger(),
       "x_lqr = [%.2f %.2f %.2f %.2f %.2f %.2f], v_left = %.2f, v_right = %.2f",
       x_lqr[0], x_lqr[1], x_lqr[2], x_lqr[3], x_lqr[4], x_lqr[5], v_left, v_right);
-
+*/
     left_pub_->publish(Float32().set__data(static_cast<float>(v_left)));
     right_pub_->publish(Float32().set__data(static_cast<float>(v_right)));
   }
