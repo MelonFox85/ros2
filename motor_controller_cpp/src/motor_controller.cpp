@@ -98,7 +98,7 @@ private:
         max_voltage_ = declare_parameter<double>("max_voltage", 12.0, desc);
         
         desc.description = "Минимальная скважность (%) для преодоления мёртвой зоны двигателей";
-        min_duty_pct_ = declare_parameter<double>("min_duty_pct", 7.5, desc);
+        min_duty_pct_ = declare_parameter<double>("min_duty_pct", 5, desc);
         
         desc.description = "Инвертировать направление левого двигателя";
         invert_left_ = declare_parameter<bool>("invert_left", false, desc);
