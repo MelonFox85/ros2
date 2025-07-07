@@ -231,11 +231,17 @@ private:
         // Преобразование напряжения в скважность (-100% до +100%)
         double duty_pct = (voltage / max_voltage_) * 100.0;
         
-        // Учет мёртвой зоны
-        if (duty_pct > 0.0 && duty_pct < min_duty_pct_) {
-            duty_pct = min_duty_pct_;
-        } else if (duty_pct < 0.0 && duty_pct > -min_duty_pct_) {
-            duty_pct = -min_duty_pct_;
+        // Учет мёртвой зоны: если меньше — 0, если больше — прибавляем с сохранением знака
+        if (std::abs(duty_pct) < min_duty_pct_) {
+            duty_pct = 0.0;
+        } else {
+            if (duty_pct > 0.0) {
+                duty_pct += min_duty_pct_;
+                if (duty_pct > 100.0) duty_pct = 100.0;
+            } else {
+                duty_pct -= min_duty_pct_;
+                if (duty_pct < -100.0) duty_pct = -100.0;
+            }
         }
         
         // Применение скважности к мотору
@@ -327,3 +333,4 @@ int main(int argc, char * argv[])
     rclcpp::shutdown();
     return 0;
 }
+
