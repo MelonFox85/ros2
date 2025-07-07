@@ -1,11 +1,8 @@
 #include "encoder_node.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
-#include <numeric>
-#include <vector>
-#include <chrono>
 
 EncoderNode::EncoderNode() : Node("encoder_node"), chip_(GPIO_CHIP_NAME, gpiod::chip::OPEN_BY_NAME) {
-    RCLCPP_INFO(this->get_logger(), "Initializing Encoder Node with 2x Decoding and Speed Filtering");
+    RCLCPP_INFO(this->get_logger(), "Initializing Encoder Node with 4x Decoding and Speed Filtering");
 
     this->declare_parameter<int>("left_encoder_pin_a", 24);
     this->declare_parameter<int>("left_encoder_pin_b", 23);
@@ -23,23 +20,17 @@ EncoderNode::EncoderNode() : Node("encoder_node"), chip_(GPIO_CHIP_NAME, gpiod::
     ppr_ = this->get_parameter("ppr").as_int();
     gear_ratio_ = this->get_parameter("gear_ratio").as_int();
     filter_window_size_ = this->get_parameter("filter_window_size").as_int();
-    if (filter_window_size_ <= 0) {
-        RCLCPP_WARN(this->get_logger(), "filter_window_size must be positive. Defaulting to 1.");
-        filter_window_size_ = 1;
-    }
 
     double publish_rate_hz = this->get_parameter("publish_rate_hz").as_double();
     publish_interval_seconds_ = 1.0 / (publish_rate_hz > 0 ? publish_rate_hz : 400.0);
 
-    // Используем 2x декодирование. Это самый надежный и эффективный по CPU способ.
-    // Мы ловим оба фронта на линии A и используем линию B только для определения направления.
-    events_per_wheel_revolution_ = static_cast<double>(2 * ppr_ * gear_ratio_);
+    events_per_wheel_revolution_ = static_cast<double>(4 * ppr_ * gear_ratio_);
 
     if (events_per_wheel_revolution_ == 0) {
         RCLCPP_ERROR(this->get_logger(), "Events per wheel revolution is zero. Check PPR and gear_ratio.");
         throw std::runtime_error("Events per wheel revolution is zero.");
     }
-    RCLCPP_INFO(this->get_logger(), "Using 2x decoding. Calculated events_per_wheel_revolution: %.2f", events_per_wheel_revolution_);
+    RCLCPP_INFO(this->get_logger(), "Using 4x decoding. Calculated events_per_wheel_revolution: %.2f", events_per_wheel_revolution_);
     RCLCPP_INFO(this->get_logger(), "Using moving average filter with window size: %d", filter_window_size_);
 
     left_encoder_ticks_.store(0);
@@ -83,32 +74,56 @@ EncoderNode::~EncoderNode() {
 }
 
 void EncoderNode::initialize_gpio() {
-    RCLCPP_INFO(this->get_logger(), "Requesting GPIO lines for 2x decoding...");
-    // Канал A - для событий
-    line_left_a_.request({ "enc_L_A", gpiod::line_request::EVENT_BOTH_EDGES, 0 });
-    // Канал B - просто для чтения состояния
-    line_left_b_.request({ "enc_L_B", gpiod::line_request::DIRECTION_INPUT, 0 });
+    RCLCPP_INFO(this->get_logger(), "Requesting GPIO lines for 4x decoding...");
+    line_left_a_ = chip_.get_line(left_encoder_pin_a_);
+    line_left_b_ = chip_.get_line(left_encoder_pin_b_);
+    line_left_a_.request({"enc_L_A", gpiod::line_request::EVENT_BOTH_EDGES, 0});
+    line_left_b_.request({"enc_L_B", gpiod::line_request::EVENT_BOTH_EDGES, 0});
 
-    line_right_a_.request({ "enc_R_A", gpiod::line_request::EVENT_BOTH_EDGES, 0 });
-    line_right_b_.request({ "enc_R_B", gpiod::line_request::DIRECTION_INPUT, 0 });
+    line_right_a_ = chip_.get_line(right_encoder_pin_a_);
+    line_right_b_ = chip_.get_line(right_encoder_pin_b_);
+    line_right_a_.request({"enc_R_A", gpiod::line_request::EVENT_BOTH_EDGES, 0});
+    line_right_b_.request({"enc_R_B", gpiod::line_request::EVENT_BOTH_EDGES, 0});
     RCLCPP_INFO(this->get_logger(), "GPIO lines requested successfully.");
 }
 
 void EncoderNode::gpio_event_loop(gpiod::line& line_a, gpiod::line& line_b,
                                   std::atomic<long long>& ticks,
                                   const std::string& encoder_name) {
-    RCLCPP_INFO(this->get_logger(), "Starting GPIO event loop for %s encoder.", encoder_name.c_str());
+    RCLCPP_INFO(this->get_logger(), "Starting 4x GPIO event loop for %s encoder.", encoder_name.c_str());
+
+    const int8_t state_table[16] = {
+        0, -1, 1, 0,
+        1, 0, 0, -1,
+        -1, 0, 0, 1,
+        0, 1, -1, 0
+    };
+
+    int prev_a = line_a.get_value();
+    int prev_b = line_b.get_value();
+    int prev_state = (prev_a << 1) | prev_b;
+
+    // --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+    // 1. Создаем вектор линий
+    std::vector<gpiod::line> lines_vec;
+    // 2. Добавляем в него наши линии
+    lines_vec.push_back(line_a);
+    lines_vec.push_back(line_b);
+    // 3. Создаем line_bulk из этого вектора
+    gpiod::line_bulk bulk_lines(lines_vec);
+
     try {
         while (running_.load()) {
-            // Ожидаем событие только на одной линии. Таймаут 100мс для корректного завершения.
-            if (line_a.event_wait(std::chrono::milliseconds(100))) {
-                gpiod::line_event event = line_a.event_read();
-                int val_b = line_b.get_value();
+            gpiod::line_bulk event_bulk = bulk_lines.event_wait(std::chrono::milliseconds(100));
+            if (!event_bulk.empty()) {
+                int curr_a = line_a.get_value();
+                int curr_b = line_b.get_value();
+                int curr_state = (curr_a << 1) | curr_b;
 
-                if (event.event_type == gpiod::line_event::RISING_EDGE) {
-                    ticks += (val_b == 0) ? 1 : -1;
-                } else { // FALLING_EDGE
-                    ticks += (val_b == 1) ? 1 : -1;
+                if (curr_state != prev_state) {
+                    int8_t increment = state_table[(prev_state << 2) | curr_state];
+                    ticks += increment;
+                    prev_state = curr_state;
                 }
             }
         }
@@ -121,7 +136,7 @@ void EncoderNode::gpio_event_loop(gpiod::line& line_a, gpiod::line& line_b,
 }
 
 void EncoderNode::calculate_and_publish_speed() {
-    if (events_per_wheel_revolution_ == 0 || publish_interval_seconds_ == 0 || filter_window_size_ == 0) {
+    if (events_per_wheel_revolution_ == 0 || publish_interval_seconds_ == 0) {
         return;
     }
 
@@ -131,11 +146,10 @@ void EncoderNode::calculate_and_publish_speed() {
     double raw_left_speed_rps = static_cast<double>(current_left_ticks) / events_per_wheel_revolution_ / publish_interval_seconds_;
     double raw_right_speed_rps = static_cast<double>(current_right_ticks) / events_per_wheel_revolution_ / publish_interval_seconds_;
 
-    left_speed_buffer_.pop_front();
     left_speed_buffer_.push_back(raw_left_speed_rps);
-    
-    right_speed_buffer_.pop_front();
+    left_speed_buffer_.pop_front();
     right_speed_buffer_.push_back(raw_right_speed_rps);
+    right_speed_buffer_.pop_front();
 
     double filtered_left_speed_rps = std::accumulate(left_speed_buffer_.begin(), left_speed_buffer_.end(), 0.0) / filter_window_size_;
     double filtered_right_speed_rps = std::accumulate(right_speed_buffer_.begin(), right_speed_buffer_.end(), 0.0) / filter_window_size_;

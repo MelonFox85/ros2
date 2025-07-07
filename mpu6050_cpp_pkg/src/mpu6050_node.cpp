@@ -19,12 +19,10 @@ class Mpu6050Node : public rclcpp::Node
 public:
   Mpu6050Node() : Node("mpu6050_reader_cpp")
   {
-    /* ── открыть i2c-шину ────────────────────────────────────────── */
     fd_ = ::open("/dev/i2c-1", O_RDWR);
     if (fd_ < 0)
       throw std::runtime_error("open /dev/i2c-1 failed");
 
-    /* выбрать адрес ведомого один раз: многие драйверы этого требуют */
     if (::ioctl(fd_, I2C_SLAVE, MPU) < 0)
       throw std::runtime_error("I2C_SLAVE ioctl failed");
 
@@ -33,7 +31,6 @@ public:
     pub_ = create_publisher<std_msgs::msg::Float32MultiArray>(
              "mpu6050/raw", rclcpp::SensorDataQoS());
 
-    /* 700 µs ≈ 1.4 кГц таймер – реальная частота ограничится I²C */
     timer_ = create_wall_timer(std::chrono::microseconds(2500),
                                std::bind(&Mpu6050Node::tick, this));
 
@@ -43,7 +40,6 @@ public:
   ~Mpu6050Node() override { if (fd_ >= 0) ::close(fd_); }
 
 private:
-  /* ────────────────── запись 1 регистра через I2C_RDWR ──────────── */
   void write_reg(uint8_t reg, uint8_t val)
   {
     uint8_t buf[2] = {reg, val};
@@ -57,18 +53,19 @@ private:
     }
   }
 
-  /* ───────────────────────── init ──────────────────────────────── */
   void init_chip()
   {
     write_reg(0x6B, 0x00);          // PWR_MGMT_1 ← 0
     usleep(50'000);
-    write_reg(0x1A, 0x01);          // CONFIG (DLPF 184 Гц)
+    // --- ИСПРАВЛЕНИЕ ЗДЕСЬ: Отключаем DLPF для минимальной задержки ---
+    // Устанавливаем значение 0x07, что соответствует "Filter bandwidth 260Hz, delay 0ms" для акселерометра
+    // и "Filter bandwidth 256Hz, delay 0.98ms" для гироскопа. Это самый быстрый режим.
+    write_reg(0x1A, 0x00);          // CONFIG (DLPF_CFG = 0)
     write_reg(0x19, 0x00);          // SMPLRT_DIV = 0  (1 кГц)
     write_reg(0x1C, 0x00);          // ACC_CFG  ±2 g
     write_reg(0x1B, 0x00);          // GYRO_CFG ±250 dps
   }
 
-  /* ───────────────────────── tick ──────────────────────────────── */
   void tick()
   {
     uint8_t reg = ACC_H;
@@ -83,7 +80,7 @@ private:
     if (::ioctl(fd_, I2C_RDWR, &xfer) < 0)
     {
       perror("I2C_RDWR(read)");
-      return;                       // пропускаем один кадр
+      return;
     }
 
     auto be16 = [](const uint8_t *p){ return int16_t(p[0] << 8 | p[1]); };
@@ -92,9 +89,7 @@ private:
 
     std_msgs::msg::Float32MultiArray msg;
     msg.data = {
-      ax / ACC_SENS,
-      ay / ACC_SENS,
-      az / ACC_SENS,
+      ax / ACC_SENS, ay / ACC_SENS, az / ACC_SENS,
       (gx / G_SENS_DPS) * DEG2RAD,
       (gy / G_SENS_DPS) * DEG2RAD,
       (gz / G_SENS_DPS) * DEG2RAD
@@ -102,7 +97,6 @@ private:
     pub_->publish(msg);
   }
 
-  /* ─────────── members ─────────── */
   int fd_;
   rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr pub_;
   rclcpp::TimerBase::SharedPtr timer_;
