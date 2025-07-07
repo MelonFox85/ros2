@@ -27,7 +27,7 @@ public:
      *  gyro_clip  – maximum allowed absolute gyro value    [rad/s]
      *  invert_*   – flips sensor axes to match the robot frame
      */
-    tau_       = declare_parameter<double>("tau", 0.1);
+    tau_       = declare_parameter<double>("tau", 0.8);
     gyro_clip_ = declare_parameter<double>("gyro_clip", 30.0);
 
     inv_ax_ = declare_parameter<bool>("invert_acc_x",   false);

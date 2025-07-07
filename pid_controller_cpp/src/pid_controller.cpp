@@ -86,11 +86,23 @@ public:
         load_all_parameters();
 
         // --- QoS, Подписчики и Издатели ---
-        rclcpp::QoS qos(rclcpp::KeepLast(1));
-        feedback_sub_ = create_subscription<Float32MultiArray>("feedback", qos, std::bind(&PIDControllerNode::feedback_callback, this, std::placeholders::_1));
-        left_pub_ = create_publisher<Float32>("motor_cmd/left", qos);
-        right_pub_ = create_publisher<Float32>("motor_cmd/right", qos);
-        debug_pub_ = create_publisher<Float32MultiArray>("pid_debug", qos);
+        // --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
+        // Создаем QoS профиль, который сохраняет последнее сообщение для новых подписчиков.
+        // Это аналог "latching" в ROS 1.
+        auto motor_cmd_qos = rclcpp::QoS(rclcpp::KeepLast(1));
+        motor_cmd_qos.transient_local(); // Устанавливаем Durability в TRANSIENT_LOCAL
+
+        // QoS для подписки на feedback (можно оставить по умолчанию)
+        rclcpp::QoS feedback_qos(rclcpp::KeepLast(1));
+
+        feedback_sub_ = create_subscription<Float32MultiArray>("feedback", feedback_qos, std::bind(&PIDControllerNode::feedback_callback, this, std::placeholders::_1));
+        
+        // Применяем новый QoS к издателям команд моторов
+        left_pub_ = create_publisher<Float32>("motor_cmd/left", motor_cmd_qos);
+        right_pub_ = create_publisher<Float32>("motor_cmd/right", motor_cmd_qos);
+        
+        // Для отладки можно оставить обычный QoS
+        debug_pub_ = create_publisher<Float32MultiArray>("pid_debug", feedback_qos);
         
         // --- Инициализация переменных ---
         integral_position_ = 0.0;
@@ -101,7 +113,7 @@ public:
         param_callback_handle_ = this->add_on_set_parameters_callback(
             std::bind(&PIDControllerNode::parameters_callback, this, std::placeholders::_1));
 
-        RCLCPP_INFO(get_logger(), "Узел PID-регулятора запущен.");
+        RCLCPP_INFO(get_logger(), "Узел PID-регулятора запущен с QoS=TRANSIENT_LOCAL для команд моторов.");
     }
 
 private:

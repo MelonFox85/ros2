@@ -222,6 +222,7 @@ private:
         publish_status();
     }
     
+    // --- ВОЗВРАЩЕНА ОРИГИНАЛЬНАЯ ЛОГИКА ---
     // Применение команды к мотору и возврат итоговой скважности (%)
     double apply_motor_command(double voltage, unsigned in1, unsigned in2, unsigned pwm_pin)
     {
@@ -333,4 +334,3 @@ int main(int argc, char * argv[])
     rclcpp::shutdown();
     return 0;
 }
-
