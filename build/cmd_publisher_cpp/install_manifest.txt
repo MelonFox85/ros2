@@ -1,0 +1,17 @@
+/home/airat/ros2_cpp_ws/src/install/lib/cmd_publisher_cpp/cmd_publisher_zeros
+/home/airat/ros2_cpp_ws/src/install/lib/cmd_publisher_cpp/cmd_publisher_circle
+/home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/package_run_dependencies/cmd_publisher_cpp
+/home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/parent_prefix_path/cmd_publisher_cpp
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/environment/ament_prefix_path.sh
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/environment/ament_prefix_path.dsv
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/environment/path.sh
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/environment/path.dsv
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/local_setup.bash
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/local_setup.sh
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/local_setup.zsh
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/local_setup.dsv
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/package.dsv
+/home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/packages/cmd_publisher_cpp
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/cmake/cmd_publisher_cppConfig.cmake
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/cmake/cmd_publisher_cppConfig-version.cmake
+/home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/package.xml

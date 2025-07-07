@@ -1,0 +1,19 @@
+[35m[1mConsolidate compiler generated dependencies of target neg_feedback[0m
+[100%] Built target neg_feedback
+-- Install configuration: ""
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/lib/feedback_cpp_pkg/neg_feedback
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/package_run_dependencies/feedback_cpp_pkg
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/parent_prefix_path/feedback_cpp_pkg
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/environment/ament_prefix_path.sh
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/environment/path.sh
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/environment/path.dsv
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/local_setup.bash
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/local_setup.sh
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/local_setup.zsh
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/local_setup.dsv
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/package.dsv
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/packages/feedback_cpp_pkg
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/cmake/feedback_cpp_pkgConfig.cmake
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/cmake/feedback_cpp_pkgConfig-version.cmake
+-- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/package.xml

@@ -1,0 +1,20 @@
+[35m[1mConsolidate compiler generated dependencies of target motor_controller[0m
+[100%] Built target motor_controller
+-- Install configuration: ""
+-- Installing: /home/airat/ros2_cpp_ws/src/install/lib/motor_controller_cpp/motor_controller
+-- Set runtime path of "/home/airat/ros2_cpp_ws/src/install/lib/motor_controller_cpp/motor_controller" to ""
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/package_run_dependencies/motor_controller_cpp
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/parent_prefix_path/motor_controller_cpp
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/environment/ament_prefix_path.sh
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/environment/ament_prefix_path.dsv
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/environment/path.sh
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/environment/path.dsv
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/local_setup.bash
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/local_setup.sh
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/local_setup.zsh
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/local_setup.dsv
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/package.dsv
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/packages/motor_controller_cpp
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/cmake/motor_controller_cppConfig.cmake
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/cmake/motor_controller_cppConfig-version.cmake
+-- Installing: /home/airat/ros2_cpp_ws/src/install/share/motor_controller_cpp/package.xml

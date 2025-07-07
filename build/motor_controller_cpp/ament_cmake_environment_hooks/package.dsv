@@ -1,0 +1,4 @@
+source;share/motor_controller_cpp/local_setup.bash
+source;share/motor_controller_cpp/local_setup.dsv
+source;share/motor_controller_cpp/local_setup.sh
+source;share/motor_controller_cpp/local_setup.zsh

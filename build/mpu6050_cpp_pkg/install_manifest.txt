@@ -1,0 +1,17 @@
+/home/airat/ros2_cpp_ws/src/install/lib/mpu6050_cpp_pkg/mpu6050_node
+/home/airat/ros2_cpp_ws/src/install/lib/mpu6050_cpp_pkg/complementary_filter
+/home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/package_run_dependencies/mpu6050_cpp_pkg
+/home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/parent_prefix_path/mpu6050_cpp_pkg
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/environment/ament_prefix_path.sh
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/environment/ament_prefix_path.dsv
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/environment/path.sh
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/environment/path.dsv
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/local_setup.bash
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/local_setup.sh
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/local_setup.zsh
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/local_setup.dsv
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/package.dsv
+/home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/packages/mpu6050_cpp_pkg
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/cmake/mpu6050_cpp_pkgConfig.cmake
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/cmake/mpu6050_cpp_pkgConfig-version.cmake
+/home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/package.xml

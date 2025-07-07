@@ -1,0 +1,73 @@
+[0.130s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake /home/airat/ros2_cpp_ws/src/cmd_publisher_cpp -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
+[0.899s] -- The C compiler identification is GNU 11.4.0
+[1.334s] -- The CXX compiler identification is GNU 11.4.0
+[1.395s] -- Detecting C compiler ABI info
+[1.988s] -- Detecting C compiler ABI info - done
+[2.072s] -- Check for working C compiler: /usr/bin/cc - skipped
+[2.074s] -- Detecting C compile features
+[2.078s] -- Detecting C compile features - done
+[2.136s] -- Detecting CXX compiler ABI info
+[2.846s] -- Detecting CXX compiler ABI info - done
+[2.872s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[2.874s] -- Detecting CXX compile features
+[2.875s] -- Detecting CXX compile features - done
+[2.905s] -- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)
+[5.683s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[7.617s] -- Found rclcpp: 16.0.12 (/opt/ros/humble/share/rclcpp/cmake)
+[8.374s] -- Found rosidl_generator_c: 3.1.6 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[8.441s] -- Found rosidl_adapter: 3.1.6 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[8.557s] -- Found rosidl_generator_cpp: 3.1.6 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[8.676s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[8.867s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[9.356s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[9.385s] -- Found rmw_fastrtps_cpp: 6.2.7 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[10.480s] -- Found OpenSSL: /usr/lib/aarch64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[10.882s] -- Found FastRTPS: /opt/ros/humble/include  
+[11.427s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[11.549s] -- Looking for pthread.h
+[12.306s] -- Looking for pthread.h - found
+[12.310s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[13.050s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[13.055s] -- Found Threads: TRUE  
+[13.593s] -- Found ament_lint_auto: 0.12.12 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[14.871s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[14.874s] -- Configured cppcheck include dirs: $<BUILD_INTERFACE:/home/airat/ros2_cpp_ws/src/cmd_publisher_cpp/include>
+[14.875s] -- Configured cppcheck exclude dirs and/or files: 
+[14.885s] -- Added test 'lint_cmake' to check CMake code style
+[14.914s] -- Added test 'uncrustify' to check C / C++ code style
+[14.915s] -- Configured uncrustify additional arguments: 
+[14.931s] -- Added test 'xmllint' to check XML markup files
+[14.955s] -- Configuring done
+[15.081s] -- Generating done
+[15.119s] -- Build files have been written to: /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp
+[15.218s] Invoked command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake /home/airat/ros2_cpp_ws/src/cmd_publisher_cpp -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
+[15.222s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp -- -j4 -l4
+[15.645s] [ 25%] [32mBuilding CXX object CMakeFiles/cmd_publisher_circle.dir/src/cmd_publisher_circle.cpp.o[0m
+[15.684s] [ 50%] [32mBuilding CXX object CMakeFiles/cmd_publisher_zeros.dir/src/cmd_publisher_zeros.cpp.o[0m
+[74.961s] [ 75%] [32m[1mLinking CXX executable cmd_publisher_circle[0m
+[78.065s] [ 75%] Built target cmd_publisher_circle
+[78.957s] [100%] [32m[1mLinking CXX executable cmd_publisher_zeros[0m
+[80.584s] [100%] Built target cmd_publisher_zeros
+[80.742s] Invoked command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp -- -j4 -l4
+[80.751s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp
+[80.881s] -- Install configuration: ""
+[80.887s] -- Installing: /home/airat/ros2_cpp_ws/src/install/lib/cmd_publisher_cpp/cmd_publisher_zeros
+[80.930s] -- Set runtime path of "/home/airat/ros2_cpp_ws/src/install/lib/cmd_publisher_cpp/cmd_publisher_zeros" to ""
+[80.932s] -- Installing: /home/airat/ros2_cpp_ws/src/install/lib/cmd_publisher_cpp/cmd_publisher_circle
+[80.945s] -- Set runtime path of "/home/airat/ros2_cpp_ws/src/install/lib/cmd_publisher_cpp/cmd_publisher_circle" to ""
+[80.947s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/package_run_dependencies/cmd_publisher_cpp
+[80.953s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/parent_prefix_path/cmd_publisher_cpp
+[80.959s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/environment/ament_prefix_path.sh
+[80.966s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/environment/ament_prefix_path.dsv
+[80.971s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/environment/path.sh
+[80.973s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/environment/path.dsv
+[80.989s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/local_setup.bash
+[80.992s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/local_setup.sh
+[80.998s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/local_setup.zsh
+[81.010s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/local_setup.dsv
+[81.014s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/package.dsv
+[81.024s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/packages/cmd_publisher_cpp
+[81.027s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/cmake/cmd_publisher_cppConfig.cmake
+[81.031s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/cmake/cmd_publisher_cppConfig-version.cmake
+[81.044s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/cmd_publisher_cpp/package.xml
+[81.057s] Invoked command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp

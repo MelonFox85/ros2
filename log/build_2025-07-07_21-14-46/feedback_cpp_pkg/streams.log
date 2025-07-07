@@ -1,0 +1,23 @@
+[0.134s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/feedback_cpp_pkg': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/feedback_cpp_pkg -- -j4 -l4
+[0.580s] [35m[1mConsolidate compiler generated dependencies of target neg_feedback[0m
+[0.747s] [100%] Built target neg_feedback
+[0.864s] Invoked command in '/home/airat/ros2_cpp_ws/src/build/feedback_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/feedback_cpp_pkg -- -j4 -l4
+[0.874s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/feedback_cpp_pkg': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/feedback_cpp_pkg
+[0.916s] -- Install configuration: ""
+[0.918s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/lib/feedback_cpp_pkg/neg_feedback
+[0.921s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/package_run_dependencies/feedback_cpp_pkg
+[0.922s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/parent_prefix_path/feedback_cpp_pkg
+[0.923s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/environment/ament_prefix_path.sh
+[0.924s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/environment/ament_prefix_path.dsv
+[0.925s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/environment/path.sh
+[0.927s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/environment/path.dsv
+[0.929s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/local_setup.bash
+[0.930s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/local_setup.sh
+[0.934s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/local_setup.zsh
+[0.935s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/local_setup.dsv
+[0.935s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/package.dsv
+[0.936s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/packages/feedback_cpp_pkg
+[0.938s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/cmake/feedback_cpp_pkgConfig.cmake
+[0.940s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/cmake/feedback_cpp_pkgConfig-version.cmake
+[0.942s] -- Up-to-date: /home/airat/ros2_cpp_ws/src/install/share/feedback_cpp_pkg/package.xml
+[1.175s] Invoked command in '/home/airat/ros2_cpp_ws/src/build/feedback_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/feedback_cpp_pkg

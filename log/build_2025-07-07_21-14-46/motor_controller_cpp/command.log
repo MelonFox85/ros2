@@ -1,0 +1,4 @@
+Invoking command in '/home/airat/ros2_cpp_ws/src/build/motor_controller_cpp': /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/motor_controller_cpp -- -j4 -l4
+Invoked command in '/home/airat/ros2_cpp_ws/src/build/motor_controller_cpp' returned '0': /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/motor_controller_cpp -- -j4 -l4
+Invoking command in '/home/airat/ros2_cpp_ws/src/build/motor_controller_cpp': /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/motor_controller_cpp
+Invoked command in '/home/airat/ros2_cpp_ws/src/build/motor_controller_cpp' returned '0': /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/motor_controller_cpp

@@ -1,0 +1,3 @@
+Invoking command in '/home/airat/ros2_cpp_ws/src/build/pid_controller_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake /home/airat/ros2_cpp_ws/src/pid_controller_cpp -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
+Invoked command in '/home/airat/ros2_cpp_ws/src/build/pid_controller_cpp' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake /home/airat/ros2_cpp_ws/src/pid_controller_cpp -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
+Invoking command in '/home/airat/ros2_cpp_ws/src/build/pid_controller_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/pid_controller_cpp -- -j4 -l4

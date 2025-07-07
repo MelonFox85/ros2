@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>encoders_cpp_pkg</name>
+  <version>0.1.0</version>
+  <description>Package to read encoder data using libgpiod and publish as std_msgs/Float32MultiArray.</description>
+  <maintainer email="523ayrata_ajeklop@example.com">Airat</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend> <!-- Для Float32MultiArray и Header (если используется в других частях) -->
+  <!-- Системная зависимость для libgpiod C++. Убедись, что она установлена. -->
+  <!-- Для Ubuntu: sudo apt install libgpiodcxx-dev -->
+  <!-- <depend>libgpiodcxx-dev</depend> --> <!-- Эту строку лучше не добавлять как <depend>, т.к. это не ROS-пакет. PkgConfig найдет ее. -->
+
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,10 @@
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/uninstall.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/encoders_cpp_pkg_uninstall.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/encoder_node_exe.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/test.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/edit_cache.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/rebuild_cache.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/list_install_components.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/install.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/install/local.dir
+/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg/CMakeFiles/install/strip.dir

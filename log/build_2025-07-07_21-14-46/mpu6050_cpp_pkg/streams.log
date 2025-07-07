@@ -1,0 +1,30 @@
+[0.231s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/mpu6050_cpp_pkg': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/mpu6050_cpp_pkg -- -j4 -l4
+[0.526s] [35m[1mConsolidate compiler generated dependencies of target mpu6050_node[0m
+[0.572s] [35m[1mConsolidate compiler generated dependencies of target complementary_filter[0m
+[0.756s] [ 50%] Built target mpu6050_node
+[0.785s] [ 75%] [32mBuilding CXX object CMakeFiles/complementary_filter.dir/src/complementary_filter.cpp.o[0m
+[40.691s] [100%] [32m[1mLinking CXX executable complementary_filter[0m
+[42.669s] [100%] Built target complementary_filter
+[42.716s] Invoked command in '/home/airat/ros2_cpp_ws/src/build/mpu6050_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/mpu6050_cpp_pkg -- -j4 -l4
+[42.726s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/mpu6050_cpp_pkg': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/mpu6050_cpp_pkg
+[42.757s] -- Install configuration: ""
+[42.758s] -- Installing: /home/airat/ros2_cpp_ws/src/install/lib/mpu6050_cpp_pkg/mpu6050_node
+[42.768s] -- Set runtime path of "/home/airat/ros2_cpp_ws/src/install/lib/mpu6050_cpp_pkg/mpu6050_node" to ""
+[42.769s] -- Installing: /home/airat/ros2_cpp_ws/src/install/lib/mpu6050_cpp_pkg/complementary_filter
+[42.802s] -- Set runtime path of "/home/airat/ros2_cpp_ws/src/install/lib/mpu6050_cpp_pkg/complementary_filter" to ""
+[42.804s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/package_run_dependencies/mpu6050_cpp_pkg
+[42.805s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/parent_prefix_path/mpu6050_cpp_pkg
+[42.806s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/environment/ament_prefix_path.sh
+[42.806s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/environment/ament_prefix_path.dsv
+[42.807s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/environment/path.sh
+[42.807s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/environment/path.dsv
+[42.808s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/local_setup.bash
+[42.809s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/local_setup.sh
+[42.809s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/local_setup.zsh
+[42.810s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/local_setup.dsv
+[42.810s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/package.dsv
+[42.811s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/ament_index/resource_index/packages/mpu6050_cpp_pkg
+[42.820s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/cmake/mpu6050_cpp_pkgConfig.cmake
+[42.822s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/cmake/mpu6050_cpp_pkgConfig-version.cmake
+[42.822s] -- Installing: /home/airat/ros2_cpp_ws/src/install/share/mpu6050_cpp_pkg/package.xml
+[42.829s] Invoked command in '/home/airat/ros2_cpp_ws/src/build/mpu6050_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/mpu6050_cpp_pkg

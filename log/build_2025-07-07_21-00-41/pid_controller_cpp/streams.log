@@ -1,0 +1,47 @@
+[0.062s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/pid_controller_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake /home/airat/ros2_cpp_ws/src/pid_controller_cpp -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
+[0.737s] -- The C compiler identification is GNU 11.4.0
+[1.424s] -- The CXX compiler identification is GNU 11.4.0
+[1.508s] -- Detecting C compiler ABI info
+[2.262s] -- Detecting C compiler ABI info - done
+[2.296s] -- Check for working C compiler: /usr/bin/cc - skipped
+[2.298s] -- Detecting C compile features
+[2.301s] -- Detecting C compile features - done
+[2.317s] -- Detecting CXX compiler ABI info
+[3.217s] -- Detecting CXX compiler ABI info - done
+[3.268s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[3.271s] -- Detecting CXX compile features
+[3.276s] -- Detecting CXX compile features - done
+[3.324s] -- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)
+[6.786s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[7.666s] -- Found rclcpp: 16.0.12 (/opt/ros/humble/share/rclcpp/cmake)
+[8.135s] -- Found rosidl_generator_c: 3.1.6 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[8.193s] -- Found rosidl_adapter: 3.1.6 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[8.279s] -- Found rosidl_generator_cpp: 3.1.6 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[8.390s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[8.532s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[8.949s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[8.977s] -- Found rmw_fastrtps_cpp: 6.2.7 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[9.707s] -- Found OpenSSL: /usr/lib/aarch64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[10.029s] -- Found FastRTPS: /opt/ros/humble/include  
+[10.560s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[10.659s] -- Looking for pthread.h
+[11.126s] -- Looking for pthread.h - found
+[11.130s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[11.614s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[11.621s] -- Found Threads: TRUE  
+[12.036s] -- Found ament_lint_auto: 0.12.12 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[12.902s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[12.903s] -- Configured cppcheck include dirs: $<BUILD_INTERFACE:/home/airat/ros2_cpp_ws/src/pid_controller_cpp/include>
+[12.904s] -- Configured cppcheck exclude dirs and/or files: 
+[12.909s] -- Added test 'lint_cmake' to check CMake code style
+[12.920s] -- Added test 'uncrustify' to check C / C++ code style
+[12.921s] -- Configured uncrustify additional arguments: 
+[12.924s] -- Added test 'xmllint' to check XML markup files
+[12.934s] -- Configuring done
+[13.017s] -- Generating done
+[13.039s] -- Build files have been written to: /home/airat/ros2_cpp_ws/src/build/pid_controller_cpp
+[13.105s] Invoked command in '/home/airat/ros2_cpp_ws/src/build/pid_controller_cpp' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake /home/airat/ros2_cpp_ws/src/pid_controller_cpp -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
+[13.115s] Invoking command in '/home/airat/ros2_cpp_ws/src/build/pid_controller_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/pid_controller_cpp -- -j4 -l4
+[13.413s] [ 50%] [32mBuilding CXX object CMakeFiles/pid_controller.dir/src/pid_controller.cpp.o[0m
+[75.648s] [100%] [32m[1mLinking CXX executable pid_controller[0m
+[77.736s] [100%] Built target pid_controller
