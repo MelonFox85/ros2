@@ -1,4 +1,0 @@
-Invoking command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp -- -j4 -l4
-Invoked command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp -- -j4 -l4
-Invoking command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp
-Invoked command in '/home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/cmd_publisher_cpp

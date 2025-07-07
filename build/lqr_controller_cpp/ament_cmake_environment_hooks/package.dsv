@@ -1,4 +1,0 @@
-source;share/lqr_controller_cpp/local_setup.bash
-source;share/lqr_controller_cpp/local_setup.dsv
-source;share/lqr_controller_cpp/local_setup.sh
-source;share/lqr_controller_cpp/local_setup.zsh

@@ -1,6 +1,0 @@
-Invoking command in '/home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp': /usr/bin/cmake /home/airat/ros2_cpp_ws/src/lqr_controller_cpp -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
-Invoked command in '/home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp' returned '0': /usr/bin/cmake /home/airat/ros2_cpp_ws/src/lqr_controller_cpp -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
-Invoking command in '/home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp': /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp -- -j4 -l4
-Invoked command in '/home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp' returned '0': /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp -- -j4 -l4
-Invoking command in '/home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp': /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp
-Invoked command in '/home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp' returned '0': /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/lqr_controller_cpp

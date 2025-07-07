@@ -1,6 +1,0 @@
-Invoking command in '/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake /home/airat/ros2_cpp_ws/src/encoders_cpp_pkg -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
-Invoked command in '/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake /home/airat/ros2_cpp_ws/src/encoders_cpp_pkg -DCMAKE_INSTALL_PREFIX=/home/airat/ros2_cpp_ws/src/install
-Invoking command in '/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg -- -j4 -l4
-Invoked command in '/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --build /home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg -- -j4 -l4
-Invoking command in '/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg
-Invoked command in '/home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} /usr/bin/cmake --install /home/airat/ros2_cpp_ws/src/build/encoders_cpp_pkg
