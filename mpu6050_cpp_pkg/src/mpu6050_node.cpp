@@ -5,7 +5,7 @@
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h>
 #include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/float32_multi_array.hpp>
+#include <sensor_msgs/msg/imu.hpp> // <<< ИЗМЕНЕНО: Подключаем нужный тип сообщения
 #include <unistd.h>
 
 constexpr int     MPU        = 0x68;
@@ -13,28 +13,44 @@ constexpr uint8_t ACC_H      = 0x3B;
 constexpr float   ACC_SENS   = 16384.0f;
 constexpr float   G_SENS_DPS = 131.0f;
 constexpr float   DEG2RAD    = 0.01745329252f;
+constexpr float   G_IN_MSS   = 9.80665f; // Ускорение свободного падения
 
 class Mpu6050Node : public rclcpp::Node
 {
 public:
-  Mpu6050Node() : Node("mpu6050_reader_cpp")
+  Mpu6050Node() : Node("mpu6050_reader_node") // <<< ИЗМЕНЕНО: Более стандартное имя узла
   {
+    // <<< ИЗМЕНЕНО: Добавляем параметр для frame_id
+    this->declare_parameter<std::string>("frame_id", "imu_link");
+    frame_id_ = this->get_parameter("frame_id").as_string();
+
     fd_ = ::open("/dev/i2c-1", O_RDWR);
     if (fd_ < 0)
-      throw std::runtime_error("open /dev/i2c-1 failed");
+    {
+      RCLCPP_FATAL(get_logger(), "Не удалось открыть /dev/i2c-1: %s", strerror(errno));
+      rclcpp::shutdown();
+      return;
+    }
 
     if (::ioctl(fd_, I2C_SLAVE, MPU) < 0)
-      throw std::runtime_error("I2C_SLAVE ioctl failed");
+    {
+      RCLCPP_FATAL(get_logger(), "Не удалось выполнить ioctl(I2C_SLAVE): %s", strerror(errno));
+      rclcpp::shutdown();
+      return;
+    }
 
     init_chip();
 
-    pub_ = create_publisher<std_msgs::msg::Float32MultiArray>(
-             "mpu6050/raw", rclcpp::SensorDataQoS());
+    // <<< ИЗМЕНЕНО: Тип паблишера и название топика
+    // Публикуем в топик "imu/data_raw", стандартный для необработанных данных IMU
+    pub_ = create_publisher<sensor_msgs::msg::Imu>(
+             "imu/data_raw", rclcpp::SensorDataQoS());
 
-    timer_ = create_wall_timer(std::chrono::microseconds(2500),
+    timer_ = create_wall_timer(std::chrono::microseconds(2500), // 400 Гц
                                std::bind(&Mpu6050Node::tick, this));
 
-    RCLCPP_INFO(get_logger(), "MPU-6050 reader (C++) started");
+    RCLCPP_INFO(get_logger(), "Узел MPU-6050 запущен. Публикация в '%s' с frame_id '%s'",
+      pub_->get_topic_name(), frame_id_.c_str());
   }
 
   ~Mpu6050Node() override { if (fd_ >= 0) ::close(fd_); }
@@ -48,22 +64,18 @@ private:
 
     if (::ioctl(fd_, I2C_RDWR, &xfer) < 0)
     {
-      perror("I2C_RDWR(write_reg)");
-      throw std::runtime_error("i2c write failed");
+      RCLCPP_ERROR(get_logger(), "Ошибка записи в регистр I2C: %s", strerror(errno));
     }
   }
 
   void init_chip()
   {
-    write_reg(0x6B, 0x00);          // PWR_MGMT_1 ← 0
+    write_reg(0x6B, 0x00);
     usleep(50'000);
-    // --- ИСПРАВЛЕНИЕ ЗДЕСЬ: Отключаем DLPF для минимальной задержки ---
-    // Устанавливаем значение 0x07, что соответствует "Filter bandwidth 260Hz, delay 0ms" для акселерометра
-    // и "Filter bandwidth 256Hz, delay 0.98ms" для гироскопа. Это самый быстрый режим.
-    write_reg(0x1A, 0x00);          // CONFIG (DLPF_CFG = 0)
-    write_reg(0x19, 0x00);          // SMPLRT_DIV = 0  (1 кГц)
-    write_reg(0x1C, 0x00);          // ACC_CFG  ±2 g
-    write_reg(0x1B, 0x00);          // GYRO_CFG ±250 dps
+    write_reg(0x1A, 0x01);
+    write_reg(0x19, 0x01);
+    write_reg(0x1C, 0x00);
+    write_reg(0x1B, 0x00);
   }
 
   void tick()
@@ -79,33 +91,65 @@ private:
 
     if (::ioctl(fd_, I2C_RDWR, &xfer) < 0)
     {
-      perror("I2C_RDWR(read)");
+      RCLCPP_WARN(get_logger(), "Ошибка чтения с шины I2C: %s", strerror(errno));
       return;
     }
 
     auto be16 = [](const uint8_t *p){ return int16_t(p[0] << 8 | p[1]); };
-    int16_t ax = be16(raw+0), ay = be16(raw+2), az = be16(raw+4);
-    int16_t gx = be16(raw+8), gy = be16(raw+10), gz = be16(raw+12);
+    int16_t ax_raw = be16(raw+0), ay_raw = be16(raw+2), az_raw = be16(raw+4);
+    int16_t gx_raw = be16(raw+8), gy_raw = be16(raw+10), gz_raw = be16(raw+12);
 
-    std_msgs::msg::Float32MultiArray msg;
-    msg.data = {
-      ax / ACC_SENS, ay / ACC_SENS, az / ACC_SENS,
-      (gx / G_SENS_DPS) * DEG2RAD,
-      (gy / G_SENS_DPS) * DEG2RAD,
-      (gz / G_SENS_DPS) * DEG2RAD
-    };
-    pub_->publish(msg);
+    // <<< ИЗМЕНЕНО: Создаем и заполняем сообщение sensor_msgs::msg::Imu
+    auto msg = std::make_unique<sensor_msgs::msg::Imu>();
+
+    // Заполняем заголовок
+    msg->header.stamp = this->get_clock()->now();
+    msg->header.frame_id = frame_id_;
+
+    // Заполняем данные. Акселерометр в м/с^2, гироскоп в рад/с.
+    // Ваш код уже правильно конвертировал гироскоп в рад/с.
+    // Теперь конвертируем акселерометр из g в м/с^2.
+    msg->linear_acceleration.x = (ax_raw / ACC_SENS) * G_IN_MSS;
+    msg->linear_acceleration.y = (ay_raw / ACC_SENS) * G_IN_MSS;
+    msg->linear_acceleration.z = (az_raw / ACC_SENS) * G_IN_MSS;
+
+    msg->angular_velocity.x = (gx_raw / G_SENS_DPS) * DEG2RAD;
+    msg->angular_velocity.y = (gy_raw / G_SENS_DPS) * DEG2RAD;
+    msg->angular_velocity.z = (gz_raw / G_SENS_DPS) * DEG2RAD;
+
+    // Поле ориентации (quaternion) оставляем пустым (нули).
+    // Фильтр вычислит его за нас.
+    msg->orientation.x = 0.0;
+    msg->orientation.y = 0.0;
+    msg->orientation.z = 0.0;
+    msg->orientation.w = 1.0; // Валидный кватернион
+
+    // Заполняем ковариационные матрицы.
+    // Если мы не знаем точность, ставим небольшое значение в диагональ
+    // и -1 в первый элемент, чтобы показать, что матрица неизвестна.
+    // Фильтр обычно использует эти значения.
+    msg->orientation_covariance[0] = -1;
+    msg->angular_velocity_covariance[0] = 0.02;
+    msg->angular_velocity_covariance[4] = 0.02;
+    msg->angular_velocity_covariance[8] = 0.02;
+    msg->linear_acceleration_covariance[0] = 0.04;
+    msg->linear_acceleration_covariance[4] = 0.04;
+    msg->linear_acceleration_covariance[8] = 0.04;
+
+    pub_->publish(std::move(msg));
   }
 
   int fd_;
-  rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr pub_;
+  std::string frame_id_;
+  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 };
 
 int main(int argc, char **argv)
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<Mpu6050Node>());
+  auto node = std::make_shared<Mpu6050Node>();
+  rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
 }

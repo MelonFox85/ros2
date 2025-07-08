@@ -1,203 +1,202 @@
-#include <algorithm>
-#include <cmath>
-#include <memory>
+/**
+ * @file      lqr_controller.cpp
+ * @brief     Узел LQR-регулятора для двухколёсного балансирующего робота.
+ * @author    Айрат (обновлено и исправлено с помощью Copilot)
+ * @date      2025-07-08
+ *
+ * @section description Описание
+ *
+ * Этот узел реализует линейно-квадратичный регулятор (LQR). Он является
+ * сердцем системы управления высокого уровня. Его задача — преобразовать
+ * вектор ошибки состояния в команды напряжения для двигателей, чтобы
+ * стабилизировать робота и выполнить заданную команду движения.
+ *
+ * Главной особенностью этой версии является **динамическая реконфигурация**.
+ * Вы можете на лету изменять все коэффициенты усиления (например, через
+ * rqt_reconfigure), и узел немедленно применит их без перезапуска.
+ *
+ * @section subscriptions Подписки
+ *
+ * - **Топик**: `/feedback` (std_msgs/msg/Float32MultiArray)
+ *   - Принимает вектор ошибки состояния `δ = cmd - state` от узла `neg_feedback`.
+ *   - Вектор `δ` состоит из 6 элементов:
+ *     [δ_s, δ_v, δ_θ, δ_θ̇, δ_ψ, δ_ψ̇]
+ *
+ * @section publications Публикации
+ *
+ * - **Топик**: `/motor_cmd/left` (std_msgs/msg/Float32)
+ *   - Публикует вычисленное напряжение для левого двигателя (В).
+ * - **Топик**: `/motor_cmd/right` (std_msgs/msg/Float32)
+ *   - Публикует вычисленное напряжение для правого двигателя (В).
+ *
+ * @section lqr_logic Логика LQR
+ *
+ * Управление роботом разделено на две независимые задачи:
+ *
+ * 1.  **Управление Балансом (Balance Control)**:
+ *     - Отвечает за движение вперед-назад и удержание равновесия.
+ *     - Использует ошибки по позиции (s), скорости (v), углу наклона (θ) и скорости наклона (θ̇).
+ *     - Вычисляется общее для обоих колес управляющее воздействие `u_balance`.
+ *     - `u_balance = - (k_s*δ_s + k_v*δ_v + k_theta*δ_θ + k_theta_dot*δ_θ̇)`
+ *
+ * 2.  **Управление Поворотом (Yaw Control)**:
+ *     - Отвечает за повороты робота на месте или в движении.
+ *     - Использует ошибки по углу рыскания (ψ) и скорости рыскания (ψ̇).
+ *     - Вычисляется управляющее воздействие `u_yaw`, которое будет приложено к колесам
+ *       с разными знаками для создания крутящего момента.
+ *     - `u_yaw = - (k_psi*δ_ψ + k_psi_dot*δ_ψ̇)`
+ *
+ * 3.  **Итоговые команды для двигателей**:
+ *     - Напряжение для моторов формируется путем комбинирования этих двух управляющих сигналов.
+ *       Инверсия знака для `u_yaw` как раз и создает поворот.
+ *     - V_left  = u_balance - u_yaw
+ *     - V_right = u_balance + u_yaw
+ */
+
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/float32.hpp>
+#include <std_msgs/msg/float32_multi_array.hpp>
 #include <vector>
 #include <array>
-#include <numeric>
-#include <string>
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/float32.hpp"
-#include "std_msgs/msg/float32_multi_array.hpp"
-#include "rcl_interfaces/msg/parameter_descriptor.hpp"
-#include "rcl_interfaces/msg/floating_point_range.hpp"
-#include "rcl_interfaces/msg/set_parameters_result.hpp"
+#include <functional>
 
-using std_msgs::msg::Float32;
-using std_msgs::msg::Float32MultiArray;
+// Псевдонимы для удобства
+using Float32Msg = std_msgs::msg::Float32;
+using Float32ArrayMsg = std_msgs::msg::Float32MultiArray;
 
-class LQRVoltageController : public rclcpp::Node
+class LqrController : public rclcpp::Node
 {
 public:
-  LQRVoltageController() : Node("lqr_controller_cpp")
-  {
-    // Создаем дескрипторы параметров для rqt_reconfigure
-    auto double_param_desc = rcl_interfaces::msg::ParameterDescriptor{};
-    double_param_desc.read_only = false;
-    
-    auto voltage_range = rcl_interfaces::msg::FloatingPointRange{};
-    voltage_range.from_value = 0.0;
-    voltage_range.to_value = 24.0;
-    voltage_range.step = 0.1;
-    double_param_desc.floating_point_range = {voltage_range};
-    double_param_desc.description = "Максимальное напряжение (В)";
-    
-    auto bool_param_desc = rcl_interfaces::msg::ParameterDescriptor{};
-    bool_param_desc.read_only = false;
-    bool_param_desc.description = "Инвертировать направление";
-    
-    // Объявляем базовые параметры
-    max_voltage_ = declare_parameter<double>("max_voltage", 12.0, double_param_desc);
-    invert_left_ = declare_parameter<bool>("invert_left", false, bool_param_desc);
-    invert_right_ = declare_parameter<bool>("invert_right", false, bool_param_desc);
-    
-    // Создаем и объявляем коэффициенты LQR как отдельные параметры
-    // Коэффициенты для правого мотора
-    right_K_ = {
-      declare_parameter<double>("right.K_s", -11.352),
-      declare_parameter<double>("right.K_theta", -82.573),
-      declare_parameter<double>("right.K_psi", 144.35),
-      declare_parameter<double>("right.K_v", -29.556),
-      declare_parameter<double>("right.K_theta_dot", -4.7688),
-      declare_parameter<double>("right.K_psi_dot", 0.89216)
-    };
-    
-    // Коэффициенты для левого мотора
-    left_K_ = {
-      declare_parameter<double>("left.K_s", -11.352),
-      declare_parameter<double>("left.K_theta", -82.573),
-      declare_parameter<double>("left.K_psi", -144.35),
-      declare_parameter<double>("left.K_v", -29.556),
-      declare_parameter<double>("left.K_theta_dot", -4.7688),
-      declare_parameter<double>("left.K_psi_dot", -0.89216)
-    };
-    
-    // Настраиваем QoS
-    rclcpp::QoS qos(rclcpp::KeepLast(10));
-    
-    // Подписываемся на обратную связь
-    feedback_sub_ = create_subscription<Float32MultiArray>(
-      "feedback", qos,
-      std::bind(&LQRVoltageController::feedbackCallback, this, std::placeholders::_1));
-    
-    // Создаем издатели для управляющих сигналов
-    left_pub_ = create_publisher<Float32>("motor_cmd/left", qos);
-    right_pub_ = create_publisher<Float32>("motor_cmd/right", qos);
-    
-    // Создаем издатели для отладочной информации о вкладах состояний
-    left_debug_pub_ = create_publisher<Float32MultiArray>("lqr_debug/left", qos);
-    right_debug_pub_ = create_publisher<Float32MultiArray>("lqr_debug/right", qos);
-    
-    // Инициализация отладочных сообщений
-    left_debug_msg_.data.resize(6, 0.0f);
-    right_debug_msg_.data.resize(6, 0.0f);
-    
-    // Добавляем обработчик изменения параметров
-    param_callback_handle_ = this->add_on_set_parameters_callback(
-      std::bind(&LQRVoltageController::parametersCallback, this, std::placeholders::_1));
-    
-    RCLCPP_INFO(get_logger(), "LQR-регулятор запущен. Используйте rqt_reconfigure для настройки параметров.");
-  }
+    LqrController() : Node("lqr_controller")
+    {
+        // --- 1. Объявление параметров с осмысленными значениями по умолчанию ---
+        // Эти значения будут использоваться, если они не переопределены в launch-файле.
+        // Они подобраны как типичные начальные значения для балансирующего робота.
+        RCLCPP_INFO(get_logger(), "Объявление параметров LQR-регулятора...");
+        
+        // Коэффициенты для управления БАЛАНСОМ
+        declare_parameter("k_s", 0.0);           // Усиление по ошибке позиции (s). Часто начинают с 0.
+        declare_parameter("k_v", -0.45);         // Усиление по ошибке скорости (v).
+        declare_parameter("k_theta", -11.0);     // Усиление по ошибке угла наклона (θ). Ключевой параметр.
+        declare_parameter("k_theta_dot", -2.0);  // Усиление по ошибке скорости наклона (θ̇).
+        
+        // Коэффициенты для управления ПОВОРОТОМ
+        declare_parameter("k_psi", 0.0);         // Усиление по ошибке угла поворота (ψ). Часто начинают с 0.
+        declare_parameter("k_psi_dot", -0.5);    // Усиление по ошибке скорости поворота (ψ̇).
+
+        // --- 2. Инициализация издателей и подписчика ---
+        auto qos = rclcpp::QoS(rclcpp::KeepLast(10));
+        sub_feedback_ = create_subscription<Float32ArrayMsg>(
+            "feedback", qos,
+            std::bind(&LqrController::feedback_cb, this, std::placeholders::_1));
+
+        pub_left_ = create_publisher<Float32Msg>("motor_cmd/left", qos);
+        pub_right_ = create_publisher<Float32Msg>("motor_cmd/right", qos);
+
+        // --- 3. Настройка колбэка для динамической реконфигурации ---
+        // Регистрируем функцию, которая будет автоматически вызываться ROS 2
+        // каждый раз, когда один или несколько параметров этого узла изменяются.
+        parameters_callback_handle_ = add_on_set_parameters_callback(
+            std::bind(&LqrController::parameters_callback, this, std::placeholders::_1));
+
+        // --- 4. Первоначальная загрузка параметров и формирование векторов усиления ---
+        RCLCPP_INFO(get_logger(), "Первоначальная загрузка параметров...");
+        load_and_update_gains();
+        
+        RCLCPP_INFO(get_logger(), "LQR Controller запущен и готов к работе.");
+    }
 
 private:
-  // Обработчик для динамического изменения параметров
-  rcl_interfaces::msg::SetParametersResult parametersCallback(
-    const std::vector<rclcpp::Parameter> &parameters)
-  {
-    rcl_interfaces::msg::SetParametersResult result;
-    result.successful = true;
-    
-    for (const auto &param : parameters) {
-      const auto &name = param.get_name();
-      
-      // Обновление базовых параметров
-      if (name == "max_voltage") max_voltage_ = param.as_double();
-      else if (name == "invert_left") invert_left_ = param.as_bool();
-      else if (name == "invert_right") invert_right_ = param.as_bool();
-      
-      // Обновление коэффициентов для правого мотора
-      else if (name == "right.K_s") right_K_[0] = param.as_double();
-      else if (name == "right.K_theta") right_K_[1] = param.as_double();
-      else if (name == "right.K_psi") right_K_[2] = param.as_double();
-      else if (name == "right.K_v") right_K_[3] = param.as_double();
-      else if (name == "right.K_theta_dot") right_K_[4] = param.as_double();
-      else if (name == "right.K_psi_dot") right_K_[5] = param.as_double();
-      
-      // Обновление коэффициентов для левого мотора
-      else if (name == "left.K_s") left_K_[0] = param.as_double();
-      else if (name == "left.K_theta") left_K_[1] = param.as_double();
-      else if (name == "left.K_psi") left_K_[2] = param.as_double();
-      else if (name == "left.K_v") left_K_[3] = param.as_double();
-      else if (name == "left.K_theta_dot") left_K_[4] = param.as_double();
-      else if (name == "left.K_psi_dot") left_K_[5] = param.as_double();
-    }
-    
-    RCLCPP_DEBUG(get_logger(), "Параметры LQR-регулятора обновлены");
-    return result;
-  }
+    /**
+     * @brief Колбэк, вызываемый при получении вектора ошибки с топика /feedback.
+     */
+    void feedback_cb(const Float32ArrayMsg::SharedPtr msg)
+    {
+        if (msg->data.size() < 6) {
+            RCLCPP_WARN_ONCE(get_logger(), "Получен вектор обратной связи некорректного размера. Ожидается 6, получено %zu.", msg->data.size());
+            return;
+        }
 
-  void feedbackCallback(const Float32MultiArray::SharedPtr msg)
-  {
-    const auto & d = msg->data;
-    if (d.size() != 6) {
-      RCLCPP_WARN(get_logger(), "Получен вектор состояния неверного размера (%zu вместо 6)", d.size());
-      return;
-    }
-    
-    // /feedback: [s, v, theta, theta_dot, psi, psi_dot]
-    // LQR: [s, theta, psi, v, theta_dot, psi_dot]
-    std::array<double, 6> x_lqr = {
-      d[0], d[2], d[4], d[1], d[3], d[5]
-    };
-    
-    // Вычисление вклада каждого состояния для правого мотора
-    double v_right = 0.0;
-    std::array<double, 6> right_contributions;
-    for (size_t j = 0; j < 6; ++j) {
-      right_contributions[j] = -right_K_[j] * x_lqr[j];
-      v_right += right_contributions[j];
-    }
-    
-    // Вычисление вклада каждого состояния для левого мотора
-    double v_left = 0.0;
-    std::array<double, 6> left_contributions;
-    for (size_t j = 0; j < 6; ++j) {
-      left_contributions[j] = -left_K_[j] * x_lqr[j];
-      v_left += left_contributions[j];
-    }
-    
-    // Применение инверсии и ограничения
-    if (invert_left_)  v_left  = -v_left;
-    if (invert_right_) v_right = -v_right;
-    
-    v_left  = std::clamp(v_left,  -max_voltage_, max_voltage_);
-    v_right = std::clamp(v_right, -max_voltage_, max_voltage_);
-    
-    // Публикация управляющих сигналов
-    left_pub_->publish(Float32().set__data(static_cast<float>(v_left)));
-    right_pub_->publish(Float32().set__data(static_cast<float>(v_right)));
-    
-    // Публикация отладочной информации о вкладах
-    for (size_t i = 0; i < 6; ++i) {
-      left_debug_msg_.data[i] = static_cast<float>(left_contributions[i]);
-      right_debug_msg_.data[i] = static_cast<float>(right_contributions[i]);
-    }
-    
-    left_debug_pub_->publish(left_debug_msg_);
-    right_debug_pub_->publish(right_debug_msg_);
-  }
+        const auto& delta = msg->data; // Псевдоним для краткости
 
-  // Параметры
-  std::vector<double> left_K_;
-  std::vector<double> right_K_;
-  double max_voltage_;
-  bool invert_left_;
-  bool invert_right_;
-  
-  // ROS2 компоненты
-  rclcpp::Subscription<Float32MultiArray>::SharedPtr feedback_sub_;
-  rclcpp::Publisher<Float32>::SharedPtr left_pub_;
-  rclcpp::Publisher<Float32>::SharedPtr right_pub_;
-  rclcpp::Publisher<Float32MultiArray>::SharedPtr left_debug_pub_;
-  rclcpp::Publisher<Float32MultiArray>::SharedPtr right_debug_pub_;
-  Float32MultiArray left_debug_msg_;
-  Float32MultiArray right_debug_msg_;
-  OnSetParametersCallbackHandle::SharedPtr param_callback_handle_;
+        // --- Вычисление управляющего воздействия для БАЛАНСА ---
+        // u_balance = - (k_balance ⋅ [δ_s, δ_v, δ_θ, δ_θ̇]ᵀ)
+        const double u_balance = -(K_balance_[0] * delta[0] +   // s
+                                   K_balance_[1] * delta[1] +   // v
+                                   K_balance_[2] * delta[2] +   // theta
+                                   K_balance_[3] * delta[3]);   // theta_dot
+
+        // --- Вычисление управляющего воздействия для ПОВОРОТА ---
+        // u_yaw = - (k_yaw ⋅ [δ_ψ, δ_ψ̇]ᵀ)
+        const double u_yaw = -(K_yaw_[0] * delta[4] +           // psi
+                               K_yaw_[1] * delta[5]);          // psi_dot
+
+        // --- Формирование итоговых команд для моторов ---
+        // Здесь и происходит та самая "инверсия знаков" для создания поворота.
+        Float32Msg left_cmd, right_cmd;
+        left_cmd.data = static_cast<float>(u_balance - u_yaw);
+        right_cmd.data = static_cast<float>(u_balance + u_yaw);
+
+        pub_left_->publish(left_cmd);
+        pub_right_->publish(right_cmd);
+    }
+
+    /**
+     * @brief Загружает все параметры усиления и обновляет внутренние векторы K.
+     */
+    void load_and_update_gains()
+    {
+        // Читаем текущие значения всех параметров из ROS Parameter Server
+        K_balance_[0] = get_parameter("k_s").as_double();
+        K_balance_[1] = get_parameter("k_v").as_double();
+        K_balance_[2] = get_parameter("k_theta").as_double();
+        K_balance_[3] = get_parameter("k_theta_dot").as_double();
+        
+        K_yaw_[0] = get_parameter("k_psi").as_double();
+        K_yaw_[1] = get_parameter("k_psi_dot").as_double();
+
+        RCLCPP_INFO(get_logger(), "Векторы усиления K обновлены:");
+        RCLCPP_INFO(get_logger(), "  K_balance [s, v, th, th_d]: [%.2f, %.2f, %.2f, %.2f]",
+                    K_balance_[0], K_balance_[1], K_balance_[2], K_balance_[3]);
+        RCLCPP_INFO(get_logger(), "  K_yaw [psi, psi_d]: [%.2f, %.2f]",
+                    K_yaw_[0], K_yaw_[1]);
+    }
+
+    /**
+     * @brief Колбэк, автоматически вызываемый ROS 2 при изменении параметров.
+     */
+    rcl_interfaces::msg::SetParametersResult parameters_callback(
+        const std::vector<rclcpp::Parameter> &parameters)
+    {
+        (void)parameters; // Подавляем предупреждение о неиспользуемой переменной
+        
+        // Просто вызываем нашу основную функцию обновления.
+        load_and_update_gains();
+
+        rcl_interfaces::msg::SetParametersResult result;
+        result.successful = true;
+        result.reason = "Parameters updated successfully";
+        return result;
+    }
+
+    // --- Члены класса ---
+    rclcpp::Subscription<Float32ArrayMsg>::SharedPtr sub_feedback_;
+    rclcpp::Publisher<Float32Msg>::SharedPtr pub_left_;
+    rclcpp::Publisher<Float32Msg>::SharedPtr pub_right_;
+
+    // ИСПРАВЛЕНО: Теперь у нас два отдельных вектора усиления,
+    // что точно соответствует раздельной логике управления.
+    std::array<double, 4> K_balance_{}; // Вектор K для управления балансом
+    std::array<double, 2> K_yaw_{};     // Вектор K для управления поворотом
+
+    rclcpp::Node::OnSetParametersCallbackHandle::SharedPtr parameters_callback_handle_;
 };
 
-int main(int argc, char * argv[])
+int main(int argc, char **argv)
 {
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<LQRVoltageController>());
-  rclcpp::shutdown();
-  return 0;
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<LqrController>();
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
 }
