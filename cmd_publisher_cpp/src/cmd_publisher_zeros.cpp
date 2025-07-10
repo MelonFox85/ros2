@@ -40,6 +40,7 @@ public:
 
     /* -------- pre-allocate output message ------------------- */
     msg_.data.assign(6, 0.0f);  // six zeros
+    msg_.data[2] = -0.03f;
   }
 
 private:

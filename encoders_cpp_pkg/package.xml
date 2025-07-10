@@ -1,23 +1,49 @@
 <?xml version="1.0"?>
 <package format="3">
+  <!-- 
+    =======================================================================
+    ==                   Манифест Пакета (package.xml)                   ==
+    =======================================================================
+    Файл: package.xml
+    Пакет: encoders_cpp_pkg
+    Автор: GitHub Copilot (для Айрата)
+    Дата: 2025-07-09
+
+    Описание:
+    Этот файл содержит мета-информацию о пакете, такую как его имя,
+    версия, описание, автор и, что самое важное, его зависимости от
+    других пакетов ROS 2. Система сборки colcon использует этот файл,
+    чтобы убедиться, что все необходимое для компиляции доступно.
+  -->
+
   <name>encoders_cpp_pkg</name>
-  <version>0.1.0</version>
-  <description>Package to read encoder data using libgpiod and publish as std_msgs/Float32MultiArray.</description>
+  <version>1.0.0</version>
+  <description>
+    ROS 2 узел для публикации одометрии (nav_msgs/msg/Odometry) и
+    TF-преобразований на основе данных с квадратурных энкодеров.
+    Использует драйвер ядра Linux 'rotary-encoder' для надежного
+    считывания данных без пропуска тиков.
+  </description>
   <maintainer email="523ayrata_ajeklop@example.com">Airat</maintainer>
   <license>Apache License 2.0</license>
 
+  <!-- Основная зависимость для сборки C++ пакетов в ROS 2 -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rclcpp</depend>
-  <depend>std_msgs</depend> <!-- Для Float32MultiArray и Header (если используется в других частях) -->
-  <!-- Системная зависимость для libgpiod C++. Убедись, что она установлена. -->
-  <!-- Для Ubuntu: sudo apt install libgpiodcxx-dev -->
-  <!-- <depend>libgpiodcxx-dev</depend> --> <!-- Эту строку лучше не добавлять как <depend>, т.к. это не ROS-пакет. PkgConfig найдет ее. -->
+  <!-- 
+    Зависимости, необходимые для компиляции и запуска.
+    Мы убрали std_msgs и добавили пакеты для одометрии.
+  -->
+  <depend>rclcpp</depend>          <!-- Основная клиентская библиотека C++ для ROS 2. -->
+  <depend>nav_msgs</depend>        <!-- Содержит сообщение nav_msgs::msg::Odometry. -->
+  <depend>geometry_msgs</depend>   <!-- Содержит сообщение geometry_msgs::msg::TransformStamped для TF. -->
+  <depend>tf2_ros</depend>         <!-- Библиотека для работы с системой преобразований TF2 в ROS. -->
 
-
+  <!-- Зависимости для тестирования (оставляем стандартные) -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
+  <!-- Экспорт информации о типе сборки -->
   <export>
     <build_type>ament_cmake</build_type>
   </export>

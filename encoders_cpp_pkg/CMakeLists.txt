@@ -1,69 +1,65 @@
+# ===================================================================================
+# ==                 Инструкции по Сборке для Пакета ROS 2                       ==
+# ===================================================================================
+# Файл: CMakeLists.txt
+# Пакет: encoders_cpp_pkg
+# Автор: GitHub Copilot (для Айрата)
+# Дата: 2025-07-09
+#
+# Описание:
+# Этот файл управляет процессом сборки (компиляции) кода в пакете.
+# Он определяет, какие зависимости необходимы, какой исходный файл
+# компилировать, в какой исполняемый файл его объединять, и куда
+# устанавливать результат.
+#
+# ВАЖНО: Эта версия полностью отказывается от внешних библиотек
+# для работы с GPIO (libgpiod, pigpiod), так как вся работа с
+# энкодерами делегирована ядру Linux. Это делает сборку проще и надежнее.
+#
+# ИЗМЕНЕНИЕ: Удалена секция установки для директории 'launch',
+# так как запуск будет производиться из отдельного пакета.
+# -----------------------------------------------------------------------------------
+
+# Указываем минимальную требуемую версию CMake и название проекта.
 cmake_minimum_required(VERSION 3.8)
 project(encoders_cpp_pkg)
 
-# Стандарт C++
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-endif()
-
-# Опции компиляции
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
-# Поиск зависимостей
+# --- Поиск необходимых зависимостей (других пакетов ROS 2) ---
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED) # Для Float32MultiArray
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 
-# Поиск libgpiod с помощью PkgConfig
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LibGPIODCXX REQUIRED libgpiodcxx) # Для C++ биндингов libgpiod
+# --- Определение исполняемого файла ---
+# Мы создаем исполняемый файл с именем 'odom_publisher_node'
+# из исходного файла 'src/odom_publisher_node.cpp'.
+# Рекомендуется давать файлам осмысленные имена.
+add_executable(odom_publisher_node src/odom_publisher_node.cpp)
 
-# --- Добавление исполняемого файла ---
-add_executable(encoder_node_exe src/encoder_node.cpp)
-
-# Зависимости от других пакетов ROS 2 для нашего исполняемого файла
-ament_target_dependencies(encoder_node_exe
-    rclcpp
-    std_msgs # Узел использует сообщения std_msgs
+# --- Связывание зависимостей с исполняемым файлом ---
+# Здесь мы указываем компилятору, какие библиотеки должен использовать наш
+# исполняемый файл.
+ament_target_dependencies(
+  odom_publisher_node
+  rclcpp
+  nav_msgs
+  geometry_msgs
+  tf2_ros
 )
 
-# --- Подключение заголовочных файлов ---
-target_include_directories(encoder_node_exe PUBLIC
-    # Для заголовочных файлов твоего пакета (например, include/encoder_node.hpp)
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include> # Для установки в install/${PROJECT_NAME}/include
-
-    # Для заголовочных файлов libgpiodcxx
-    ${LibGPIODCXX_INCLUDE_DIRS}
-)
-
-# --- Линковка с библиотеками ---
-target_link_libraries(encoder_node_exe
-    # Библиотеки libgpiodcxx
-    ${LibGPIODCXX_LIBRARIES}
-    # pthread необходим для std::thread, который используется в gpiod::line::event_wait
-    # и в твоих потоках. PkgConfig для libgpiodcxx может его не включать.
-    Threads::Threads # Стандартный способ подключения pthreads в CMake
-)
-
-# --- Правила установки ---
-# Установка исполняемого файла
+# --- Правила установки (инсталляции) ---
+# Установка исполняемого файла в директорию lib, чтобы 'ros2 run' мог его найти.
 install(TARGETS
-    encoder_node_exe
-    DESTINATION lib/${PROJECT_NAME}
+  odom_publisher_node
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-# Установка заголовочных файлов твоего пакета (encoder_node.hpp)
-install(DIRECTORY include/
-  DESTINATION include # Будет установлено в install/${PROJECT_NAME}/include/
-  FILES_MATCHING PATTERN "encoder_node.hpp"
-)
+# --- Тестирование и экспорт ---
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
-# --- Экспорт зависимостей ---
-# Если другие пакеты будут зависеть от этого, они должны знать о rclcpp и std_msgs
-ament_export_dependencies(rclcpp std_msgs)
-
-# Завершающая команда для пакетов ament
+# Завершающая команда, необходимая для всех пакетов ament_cmake.
 ament_package()
